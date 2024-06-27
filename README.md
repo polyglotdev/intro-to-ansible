@@ -201,3 +201,5 @@ Methods of configuration management:
 - Errors and Debugging
   - Ansible has a built-in debugger
   - Ansible has a verbose mode
+- Tasks
+  - A single action that Ansible will run on the target host
