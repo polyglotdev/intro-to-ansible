@@ -115,3 +115,89 @@ Methods of configuration management:
   - Team City
   - Bamboo
   - CircleCl
+
+## Course Agenda
+- What is Ansible?
+- Ansible Concepts
+- Installation
+- Inventory
+- Configuring a Windows Server
+- What Are Modules?
+- Playbooks
+- Handlers, Facts, Variables, and Templates
+- Roles
+- Errors And Debugging
+- Next Steps
+
+## What is Ansible?
+
+- Ansible is an open-source automation tool
+- It allows you to run tasks on multiple servers
+- Uses YAML syntax
+- Perform compliance checks
+
+## Provisioning Environments
+
+- Ansible can automate setting up and tearing down environments
+- Specify the desired structure of the environment and Ansible will create it
+
+## Configuration Management for Operating Systems
+
+- Install and remove software
+- Ensure services are running at desired states
+  - Running
+  - Stopped
+- Apply OS patches
+
+## Deploying applications
+
+- Specify the individual tasks required to deploy an application
+- Deploy to multiple hosts / environments
+- Perform blue / green deployments
+
+## Perform Compliance Checks
+
+- Create tasks for the desired state of a host / service
+- Run the tasks to enforce that state
+- Report on any changes
+
+## What other options are there?
+
+- Chef
+- Puppet
+
+## How does Ansible compare?
+
+- Ansible doesn't require an agent to be installed on the target host
+- Ansible does require Python on linux hosts
+- Ansible does require PowerShell on Windows hosts
+- Ansible uses YAML
+- Chef and Puppet use Ruby
+- None of these makes one better than another
+
+## Which should you use?
+
+- Depends on features you need
+- It depends on the skill set of the engineers on your team
+
+## Ansible Concepts
+
+- Playbooks
+  - A YAML file that defines a set of tasks to be run on hosts
+- Modules
+  - A module is a command that Ansible runs on the target host
+- Inventory
+  - A file that lists the hosts that Ansible will run tasks on
+- Handlers
+  - A task that is only run when a task notifies it
+- Roles
+  - A way to group tasks together
+- Facts
+  - Information about the target host
+- Variables
+  - A way to store information that can be used in multiple tasks
+- Templates
+  - A way to create files on the target host
+- Errors and Debugging
+  - Ansible has a built-in debugger
+  - Ansible has a verbose mode
