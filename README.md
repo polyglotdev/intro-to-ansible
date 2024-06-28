@@ -2,6 +2,23 @@
 
 [course link](https://cloudacademy.com/course/what-is-configuration-management/general-concepts-1/?context_id=23&context_resource=lp)
 
+## What You'll Learn
+
+| Lecture                                   | What you'll learn                                       |
+| ----------------------------------------- | ------------------------------------------------------- |
+| Intro                                     | What will be covered in this lesson                     |
+| What is Ansible?                          | An introduction to Ansible                              |
+| Concepts                                  | An overview of the Ansible concepts                     |
+| Installation                              | How to install Ansible                                  |
+| Inventory                                 | How Ansible knows which servers to manage               |
+| Windows                                   | How Ansible connects to Windows servers                 |
+| Modules                                   | What modules are and how to create one                  |
+| Playbook                                  | What playbooks are and how to create them               |
+| Handlers, Facts, Variables, and Templates | Handlers, Facts, Variables, and Templates               |
+| Roles                                     | How to bundle functionality in a role                   |
+| Errors and Debugging                      | How to deal with errors and how to use the debug module |
+| Next Steps                                | How to keep learning                                    |
+
 ## What is Configuration Management?
 
 Configuration management is the process of maintaining the state of a system in a consistent and predictable way. This is done by defining the desired state of the system and then configuring the system to match that state. Configuration management is a key part of infrastructure as code, which is the practice of managing infrastructure through code rather than through manual processes.
@@ -274,3 +291,5 @@ Playbooks are written in YAML
         name: httpd
         state: started
 ```
+
+[ansible examples](https://dominiquehallan-links.com/3RN3VRH)

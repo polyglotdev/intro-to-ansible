@@ -1,0 +1,130 @@
+- name: Install FastAPI and run server
+  hosts: ec2_instances
+  tasks:
+    - name: Ensure pyenv and pyenv-virtualenv are installed
+      shell: |
+        if ! command -v pyenv &> /dev/null
+        then
+          curl https://pyenv.run | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init --path)"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Set up pyenv in the current session
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+      args:
+        executable: /bin/bash
+
+    - name: Install Python 3.10.0 with pyenv
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        if ! pyenv versions | grep -q '3.10.0'
+        then
+          pyenv install 3.10.0
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Remove existing virtualenv if it exists
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        if pyenv virtualenvs | grep -q 'fastapi_env'
+        then
+          pyenv uninstall -f fastapi_env
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Create a new virtualenv with pyenv-virtualenv
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        pyenv virtualenv 3.10.0 fastapi_env
+      args:
+        executable: /bin/bash
+
+    - name: Install FastAPI and Uvicorn in the virtualenv
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        pyenv activate fastapi_env
+        pip install fastapi uvicorn
+      args:
+        executable: /bin/bash
+
+    - name: Create api directory
+      file:
+        path: ~/api
+        state: directory
+
+    - name: Create main.py file
+      copy:
+        dest: ~/api/main.py
+        content: |
+          from typing import Union
+
+          from fastapi import FastAPI
+
+          app = FastAPI()
+
+
+          @app.get("/")
+          def read_root():
+              return {"Hello": "World"}
+
+
+          @app.get("/items/{item_id}")
+          def read_item(item_id: int, q: Union[str, None] = None):
+              return {"item_id": item_id, "q": q}
+
+    - name: Run FastAPI server
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        pyenv activate fastapi_env
+        nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 &
+      args:
+        executable: /bin/bash
+
+    - name: Wait for FastAPI server to start
+      wait_for:
+        port: 8000
+        delay: 5
+        timeout: 30
+
+    - name: Curl FastAPI server
+      shell: |
+        curl http://127.0.0.1:8000/
+      register: curl_output
+      args:
+        executable: /bin/bash
+
+    - name: Print FastAPI server output
+      debug:
+        var: curl_output.stdout_lines
+
+    - name: Kill FastAPI server
+      shell: |
+        pkill -f uvicorn
+      args:
+        executable: /bin/bash

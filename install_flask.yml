@@ -1,0 +1,87 @@
+- name: Install Flask in a pyenv virtualenv
+  hosts: ec2_instances
+  tasks:
+    - name: Ensure pyenv and pyenv-virtualenv are installed
+      shell: |
+        if ! command -v pyenv &> /dev/null
+        then
+          curl https://pyenv.run | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init --path)"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Set up pyenv in the current session
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+      args:
+        executable: /bin/bash
+
+    - name: Install Python 3.10.0 with pyenv
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        if ! pyenv versions | grep -q '3.10.0'
+        then
+          pyenv install 3.10.0
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Remove existing virtualenv if it exists
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        if pyenv virtualenvs | grep -q 'my_flask_env'
+        then
+          pyenv uninstall -f my_flask_env
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Create a new virtualenv with pyenv-virtualenv
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        pyenv virtualenv 3.10.0 my_flask_env
+      args:
+        executable: /bin/bash
+
+    - name: Install Flask in the virtualenv
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        pyenv activate my_flask_env
+        pip install flask
+      args:
+        executable: /bin/bash
+
+    - name: Verify Flask installation
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        pyenv activate my_flask_env
+        flask --version
+      register: flask_version
+      args:
+        executable: /bin/bash
+
+    - name: Display Flask version
+      debug:
+        var: flask_version.stdout_lines
