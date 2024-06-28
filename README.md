@@ -203,3 +203,18 @@ Methods of configuration management:
   - Ansible has a verbose mode
 - Tasks
   - A single action that Ansible will run on the target host
+
+## Inventory
+
+- Ansible needs to know which servers you want to manage
+- Because Ansible doesn't use an agent, you need specify the servers
+- Ansible keeps this info in an inventory file
+
+![Inventry file](./assets/inventory.png)
+
+## Variables Files
+
+- It's a best practice to store host and group specific variables in their own files
+- Hosts belong in the `/etc/ansible/host_vars` folder
+- Groups belong in the `/etc/ansible/group_vars` folder
+- The name of the variable file should match the host or group name
