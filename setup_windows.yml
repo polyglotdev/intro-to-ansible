@@ -1,0 +1,65 @@
+- name: Setup Windows instance with pyenv-win
+  hosts: windows
+  tasks:
+    - name: Ensure Chocolatey is installed
+      win_chocolatey:
+        name: chocolatey
+        state: present
+
+    - name: Install pyenv-win dependencies
+      win_chocolatey:
+        name:
+          - git
+          - python
+        state: present
+
+    - name: Copy ConfigureRemotingForAnsible script to the host
+      win_copy:
+        src: ./ConfigureRemotingForAnsible.ps1
+        dest: C:\Windows\Temp\ConfigureRemotingForAnsible.ps1
+
+    - name: Run ConfigureRemotingForAnsible script
+      win_shell: powershell.exe -ExecutionPolicy Bypass -File C:\Windows\Temp\ConfigureRemotingForAnsible.ps1
+
+    - name: Remove existing .pyenv directory if it exists
+      win_shell: |
+        if (Test-Path -Path $env:USERPROFILE\.pyenv) {
+          Remove-Item -Recurse -Force -Path $env:USERPROFILE\.pyenv
+        }
+
+    - name: Clone pyenv-win repository
+      win_shell: |
+        git clone https://github.com/pyenv-win/pyenv-win.git $env:USERPROFILE\.pyenv
+
+    - name: Update environment variables
+      win_environment:
+        state: present
+        name: PATH
+        value: $env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims
+        level: user
+
+    - name: Initialize pyenv
+      win_shell: |
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";C:\Windows\SysWoW64;$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims"
+        pyenv rehash
+        pyenv --version
+
+    - name: Install Python 3.10.0
+      win_shell: |
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";C:\Windows\SysWoW64;$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims"
+        pyenv install 3.10.0
+
+    - name: Set Python 3.10.0 as global
+      win_shell: |
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";C:\Windows\SysWoW64;$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims"
+        pyenv global 3.10.0
+
+    - name: Check Python version
+      win_shell: |
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";C:\Windows\SysWoW64;$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims"
+        python --version
+      register: python_version_check
+
+    - name: Debug Python version check
+      debug:
+        var: python_version_check.stdout_lines
