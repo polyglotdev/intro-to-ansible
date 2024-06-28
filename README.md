@@ -218,3 +218,59 @@ Methods of configuration management:
 - Hosts belong in the `/etc/ansible/host_vars` folder
 - Groups belong in the `/etc/ansible/group_vars` folder
 - The name of the variable file should match the host or group name
+
+## Modules
+
+Modules are a unit of work the represent things such as:
+- Creating files
+- Creating virtual machines
+- Editing firewall rules
+- Everything else
+- Ansible has over 750 modules
+- Modules accept arguments as key-value pairs
+
+## Custom Modules
+
+- If you need something custom Ansible allows custom modules
+- Custom modules can be created with any language that can write JSON to STDOUT
+- Examples include
+  - Python
+  - PowerShell
+  - Bash
+  - Ruby
+  - Etcetera
+
+## Playbooks
+
+### YAML
+
+- YAML is a human-readable data serialization language
+- It's commonly used for configuration files and data exchange
+
+```yaml
+- elijah:
+  - name: Elijah
+  - age: 25
+  - location: USA
+  - occupation: Software Engineer
+  skills:
+    - Python
+    - JavaScript
+    - HTML
+    - CSS
+```
+
+Playbooks are written in YAML
+
+```yaml
+- hosts: all
+  tasks:
+    - name: Install Apache
+      yum:
+        name: httpd
+        state: present
+    - name: Start Apache
+      service:
+        name: httpd
+        state: started
+```
