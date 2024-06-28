@@ -1,0 +1,23 @@
+- name: Setup EC2 instances with pyenv
+  hosts: ec2_instances
+  become: yes
+  roles:
+    - role: markosamuli.pyenv
+      pyenv:
+        root: /home/ubuntu/.pyenv
+      pyenv_python:
+        - '3.10.0'
+
+  tasks:
+    - name: Check Python version
+      shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+        python --version
+      register: python_version_check
+
+    - name: Debug Python version check
+      debug:
+        var: python_version_check.stdout_lines
